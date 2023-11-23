@@ -6,9 +6,28 @@ app=Flask(__name__)
 
 con=MySQL(app)
 
+def leer_alumnodb(matricula):
+    try:
+        cursor=con.connection.cursor()
+        sql="select * from alumnos where matricula= {0}".format(mat)
+        cursor.execute(sql)
+        datos=cursor.fetchone()
+        if datos != None:
+            alumno={'matricula':datos[0],'nombre':fila[1],'apaterno':fila[2],
+                'amaterno':fila[3],'correo':fila[4]}
+            return alumno
+        else:
+            return None
+        except Exception as ex:
+             raise ex
 @app.route('/alumnos', methods=['GET'])
 def list_alumnos():
     try: 
+        alumno=leer_alumno_db(mat)
+        if alumno != None:
+            return jsonify({'Alumnos':alumno,'mensaje':'el alumno encontrado','exito':True})
+        else:
+            return jsonify({'mensaje': alumno})
         cursor=con.connection.cursor()
         sql='select * from alumnos'
         cursor.execute(sql)
@@ -17,6 +36,7 @@ def list_alumnos():
         for fila in datos:
             alum={'matricula':fila[0],'nombre':fila[1],'apaterno':fila[2],
             'amaterno':fila[3],'correo':fila[4]}
+            
         listAlum.append(alum)
 
         #print(listAlum)
